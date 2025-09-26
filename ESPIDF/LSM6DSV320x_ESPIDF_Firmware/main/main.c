@@ -6,7 +6,7 @@
 #include "driver/gpio.h"
 #include "esp_log.h"
 #include "lsm6dsv320x_reg.h"
-
+#include "ImuManager.hpp"
 // ---------------- Pin Definitions ----------------
 #define CS_PIN    5
 #define SCK_PIN   18

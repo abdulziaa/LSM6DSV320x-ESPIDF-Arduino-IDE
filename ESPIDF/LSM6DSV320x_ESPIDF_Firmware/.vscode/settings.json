@@ -8,6 +8,7 @@
   "files.associations": {
     "*.inc": "c",
     "cstring": "c",
-    "variant": "c"
+    "variant": "c",
+    "imumanager.hpp": "c"
   }
 }
