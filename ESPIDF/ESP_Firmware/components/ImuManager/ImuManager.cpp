@@ -1,9 +1,21 @@
 #include "ImuManager.hpp"
 
-ImuManager::ImuManager(SpiPins cs, SpiPins sck, SpiPins miso, SpiPins mosi, SpiMode mode)
-    : cs_{cs}, sck_{sck}, miso_{miso}, mosi_{mosi}, mode_{mode}, whoamI{0}, dataRawTemperature{0}, status{0}, lowAccelStatus_{0}, highAccelStatus_{0}, gyroStatus_{0}, tempStatus_{0} {
+// Static member initialization
+const Character* ImuManager::TAG = "LSM6DSV320X_MANAGER";
+FilterSettingMask ImuManager::filterSettingMask = {0};
+
+ImuManager::ImuManager(gpio_num_t cs, gpio_num_t sck, gpio_num_t miso, gpio_num_t mosi, SpiMode mode)
+    : cs_{cs}, sck_{sck}, miso_{miso}, mosi_{mosi}, mode_{mode}, 
+      lowAccel_{3, 0.0f}, highAccel_{3, 0.0f}, dpsGyro_{3, 0.0f}, tempInC_{0.0f},
+      quat_{4, 0.0f}, pitch_{0.0}, roll_{0.0}, yaw_{0.0},
+      dataRawMotion{0}, dataRawTemperature{0}, status{0},
+      lowAccelStatus_{false}, highAccelStatus_{false}, gyroStatus_{false}, tempStatus_{false},
+      devCtx{0}, spiHandle{0}, whoamI{0}, txBuffer{0} {
     memset(dataRawMotion, 0, sizeof(dataRawMotion));
+    memset(&status, 0, sizeof(status));
     memset(txBuffer, 0, sizeof(txBuffer));
+    memset(&devCtx, 0, sizeof(devCtx));
+    memset(&spiHandle, 0, sizeof(spiHandle));
 }
 
 void ImuManager::setup() {
@@ -11,7 +23,7 @@ void ImuManager::setup() {
         ESP_LOGE(TAG, "SPI initialization failed");
         return;
     }
-    initImu320x(devCtx, &ImuManager::spiWrite, &ImuManager::spiRead, &ImuManager::spidelay, &spiHandle);
+    initImu320x(devCtx, &ImuManager::spiWrite, &ImuManager::spiRead, &ImuManager::spidelay, this);
     spidelay(BOOT_TIME);
     if (!whoAmI()) {
         ESP_LOGE(TAG, "IMU identification failed");
@@ -33,8 +45,10 @@ void ImuManager::loop() {
     updateTemperatureVar();
 }
 
-Flag ImuManager::initSpi() {
+Flag ImuManager::initSpi() 
+{
     esp_err_t ret;
+
     spi_bus_config_t buscfg = {
         .mosi_io_num = mosi_,
         .miso_io_num = miso_,
@@ -43,12 +57,13 @@ Flag ImuManager::initSpi() {
         .quadhd_io_num = -1,
         .max_transfer_sz = 64
     };
-    spi_device_interface_config_t devcfg = {
-        .clock_speed_hz = 10 * 1000 * 1000, // 10 MHz
-        .mode = mode_, // SPI Mode 0
-        .spics_io_num = cs_,
-        .queue_size = 1,
-    };
+
+    spi_device_interface_config_t devcfg = {};
+    devcfg.clock_speed_hz = 10 * 1000 * 1000; // 10 MHz
+    devcfg.mode = mode_;
+    devcfg.spics_io_num = cs_;
+    devcfg.queue_size = 1;
+
     ret = spi_bus_initialize(SPI2_HOST, &buscfg, SPI_DMA_CH_AUTO);
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "SPI bus initialization failed: %s", esp_err_to_name(ret));
@@ -63,43 +78,45 @@ Flag ImuManager::initSpi() {
     return true;
 }
 
-u32 ImuManager::spiRead(void* handle, u8 reg, u8* bufp, u16 len) {
+int32_t ImuManager::spiRead(void* handle, u8 reg, u8* bufp, u16 len) {
+    auto* self = static_cast<ImuManager*>(handle);
+
     uint8_t out[1 + len];
-    out[0] = reg | 0x80; // set MSB = read
-    memset(&out[1], 0x00, len); // dummy bytes
+    out[0] = reg | 0x80;
+    memset(&out[1], 0x00, len);
+
     uint8_t in[1 + len];
-    spi_transaction_t t = {
-        .length = (1 + len) * 8,
-        .tx_buffer = out,
-        .rx_buffer = in,
-    };
-    esp_err_t ret = spi_device_transmit(static_cast<spi_device_handle_t>(handle), &t);
-    if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "SPI read failed: %s", esp_err_to_name(ret));
-        return -1;
-    }
-    memcpy(bufp, &in[1], len); // skip first byte (address echo)
+
+    spi_transaction_t t = {};
+    t.length = (1 + len) * 8;
+    t.tx_buffer = out;
+    t.rx_buffer = in;
+
+    esp_err_t ret = spi_device_transmit(self->spiHandle, &t);
+    if (ret != ESP_OK) return -1;
+
+    memcpy(bufp, &in[1], len);
     return 0;
 }
 
-u32 ImuManager::spiWrite(void* handle, u8 reg, const u8* bufp, u16 len) {
+int32_t ImuManager::spiWrite(void* handle, u8 reg, const u8* bufp, u16 len) {
+    auto* self = static_cast<ImuManager*>(handle);
+
     esp_err_t ret;
-    spi_transaction_t t;
-    memset(&t, 0, sizeof(t));
+    spi_transaction_t t = {};
+    
     uint8_t tx_data[1 + len];
-    tx_data[0] = reg & 0x7F; // clear MSB for write
+    tx_data[0] = reg & 0x7F;
     memcpy(&tx_data[1], bufp, len);
+
     t.length = (1 + len) * 8;
     t.tx_buffer = tx_data;
-    t.flags = SPI_TRANS_USE_TXDATA;
-    gpio_set_level(cs_, 0);
-    ret = spi_device_transmit(static_cast<spi_device_handle_t>(handle), &t);
-    gpio_set_level(cs_, 1);
-    if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "SPI write failed: %s", esp_err_to_name(ret));
-        return -1;
-    }
-    return 0;
+
+    gpio_set_level(self->cs_, 0);
+    ret = spi_device_transmit(self->spiHandle, &t);
+    gpio_set_level(self->cs_, 1);
+
+    return (ret == ESP_OK) ? 0 : -1;
 }
 
 void ImuManager::spidelay(u32 ms) {
@@ -153,13 +170,12 @@ void ImuManager::setupImuFilter() {
     lsm6dsv320x_filt_xl_lp2_bandwidth_set(&devCtx, LSM6DSV320X_XL_STRONG);
 }
 
-DataReadyStatus ImuManager::getImuDataStatus() {
+void ImuManager::getImuDataStatus() {
     lsm6dsv320x_flag_data_ready_get(&devCtx, &status);
     lowAccelStatus_ = status.drdy_xl;
     highAccelStatus_ = status.drdy_hgxl;
     gyroStatus_ = status.drdy_gy;
     tempStatus_ = status.drdy_temp;
-    return status;
 }
 
 void ImuManager::updateLowAccelVec() {

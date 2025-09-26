@@ -247,7 +247,7 @@ extern "C" void app_main(void) {
                  lowAccel[0] / 1000.0, lowAccel[1] , lowAccel[2] );
         ESP_LOGI(TAG, "High Accel [g]: %.3f, %.3f, %.3f", 
                  highAccel[0] / 1000.0, highAccel[1], highAccel[2] );
-        ESP_LOGI(TAG, "Gyro [mdps]: %.2f, %.2f, %.2f", 
+        ESP_LOGI(TAG, "Gyro [dps]: %.2f, %.2f, %.2f", 
                  gyro[0] , gyro[1] , gyro[2] );
         ESP_LOGI(TAG, "Temperature [°C]: %.2f", temp);
 
