@@ -13,30 +13,31 @@
 #define POLL_INTERVAL 1000 // ms
 #define CNT_FOR_OUTPUT 100
 
-using RawAccelVec = std::vector<float>;
-using RawGyroVec = std::vector<float>;
-using QuaternionVec = std::vector<float>;
-using Temperature = float;
-using EulerAngles = double;
-using TimeInSeconds = double;
-using SpiMode = std::uint8_t;
-using Flag = bool;
-using u32 = std::uint32_t;
-using u16 = std::uint16_t;
-using RawMotion = int16_t;
-using RawTemperature = int16_t;
-using u8 = std::uint8_t;
-using SpiWriteFunc = int32_t (*)(void*, u8, const u8*, u16);
-using SpiReadFunc = int32_t (*)(void*, u8, u8*, u16);
-using SpiDelayFunc = void (*)(uint32_t);
-using DevCtx = stmdev_ctx_t;
-using SpiDeviceHandle = spi_device_handle_t;
-using FilterSettingMask = lsm6dsv320x_filt_settling_mask_t;
-using Character = char;
+using RawAccelVec         = std::vector<float>;
+using RawGyroVec          = std::vector<float>;
+using QuaternionVec       = std::vector<float>;
+using Temperature         = float;
+using EulerAngles         = double;
+using TimeInSeconds       = double;
+using SpiMode             = std::uint8_t;
+using Flag                = bool;
+using u32                 = std::uint32_t;
+using u16                 = std::uint16_t;
+using RawMotion           = int16_t;
+using RawTemperature      = int16_t;
+using u8                  = std::uint8_t;
+using SpiWriteFunc        = int32_t (*)(void*, u8, const u8*, u16);
+using SpiReadFunc         = int32_t (*)(void*, u8, u8*, u16);
+using SpiDelayFunc        = void (*)(uint32_t);
+using DevCtx              = stmdev_ctx_t;
+using SpiDeviceHandle     = spi_device_handle_t;
+using FilterSettingMask   = lsm6dsv320x_filt_settling_mask_t;
+using Character           = char;
 
-class ImuManager {
+class ImuManager 
+{
 private:
-    static const Character* TAG; // Static for use in static functions
+    static const Character* TAG; 
     const gpio_num_t cs_, sck_, miso_, mosi_;
     const SpiMode mode_;
     RawAccelVec lowAccel_{3, 0.0f};
@@ -45,7 +46,7 @@ private:
     Temperature tempInC_{0.0f};
     QuaternionVec quat_{4, 0.0f};
     EulerAngles pitch_{0.0}, roll_{0.0}, yaw_{0.0};
-    RawMotion dataRawMotion[3];
+    RawMotion dataRawMotionOne[3], dataRawMotionTwo[3] , dataRawMotionThree[3];
     RawTemperature dataRawTemperature;
     lsm6dsv320x_data_ready_t status;
     bool lowAccelStatus_, highAccelStatus_, gyroStatus_, tempStatus_;
