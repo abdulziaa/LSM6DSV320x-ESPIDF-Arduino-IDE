@@ -18,8 +18,8 @@ end
 
 # Load bootloader symbols
 set confirm off
-    add-symbol-file C:/Users/Admin/Documents/GitHub/LSM6DSV320x-ESPIDF-Arduino-IDE/ESPIDF/LSM6DSV320x_ESPIDF_Firmware/build/bootloader/bootloader.elf
+    add-symbol-file C:/Users/Admin/Documents/GitHub/LSM6DSV320x/ESPIDF/ESP_Firmware/build/bootloader/bootloader.elf
 set confirm on
 
 # Load application symbols
-file C:/Users/Admin/Documents/GitHub/LSM6DSV320x-ESPIDF-Arduino-IDE/ESPIDF/LSM6DSV320x_ESPIDF_Firmware/build/blink.elf
+file C:/Users/Admin/Documents/GitHub/LSM6DSV320x/ESPIDF/ESP_Firmware/build/blink.elf

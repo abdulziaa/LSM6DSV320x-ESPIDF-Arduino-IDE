@@ -1,2 +1,2 @@
-source C:/Users/Admin/Documents/GitHub/LSM6DSV320x-ESPIDF-Arduino-IDE/ESPIDF/LSM6DSV320x_ESPIDF_Firmware/build/gdbinit/symbols
-source C:/Users/Admin/Documents/GitHub/LSM6DSV320x-ESPIDF-Arduino-IDE/ESPIDF/LSM6DSV320x_ESPIDF_Firmware/build/gdbinit/connect
+source C:/Users/Admin/Documents/GitHub/LSM6DSV320x/ESPIDF/ESP_Firmware/build/gdbinit/symbols
+source C:/Users/Admin/Documents/GitHub/LSM6DSV320x/ESPIDF/ESP_Firmware/build/gdbinit/connect

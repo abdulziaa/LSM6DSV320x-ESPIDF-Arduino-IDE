@@ -12,21 +12,21 @@ extern "C" void app_main(void)
     ImuManager imu;
     imu.setup();
 
-    ESP_LOGI(TAG, "IMU initialized, starting data polling...");
+    printf("IMU initialized, starting data polling...");
 
     while (1) 
     {
 
         imu.loop();
 
-        RawAccelVec lowAccel = imu.getRawLowAccelerationIng();
-        RawAccelVec highAccel = imu.getRawHighAccelerationIng();
-        RawGyroVec gyro = imu.getRawGyroInMdps();
-        Temperature temp = imu.getTemperatureInDegreeC();
+        const RawAccelVec& lowAccel = imu.getRawLowAccelerationIng();
+        // const RawAccelVec& highAccel = imu.getRawHighAccelerationIng();
+        // const RawGyroVec& gyro = imu.getRawGyroInMdps();
+        // const Temperature& temp = imu.getTemperatureInDegreeC();
 
         // Print sensor data
-        // ESP_LOGI(TAG, "Low Accel [g]: %.3f, %.3f, %.3f", 
-        //          lowAccel[0] , lowAccel[1] , lowAccel[2] );
+        printf("Low Accel [g]: %.3f, %.3f, %.3f", 
+                 lowAccel[0] , lowAccel[1] , lowAccel[2] );
         // ESP_LOGI(TAG, "High Accel [g]: %.3f, %.3f, %.3f", 
         //          highAccel[0] , highAccel[1], highAccel[2] );
         // ESP_LOGI(TAG, "Gyro [dps]: %.2f, %.2f, %.2f", 

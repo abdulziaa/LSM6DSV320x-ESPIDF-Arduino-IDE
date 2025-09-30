@@ -10,18 +10,18 @@ if(NOT EXISTS "C:/Espressif/frameworks/esp-idf-v5.4.1/components/bootloader/subp
   file(MAKE_DIRECTORY "C:/Espressif/frameworks/esp-idf-v5.4.1/components/bootloader/subproject")
 endif()
 file(MAKE_DIRECTORY
-  "C:/Users/Admin/Documents/GitHub/LSM6DSV320x-ESPIDF-Arduino-IDE/ESPIDF/LSM6DSV320x_ESPIDF_Firmware/build/bootloader"
-  "C:/Users/Admin/Documents/GitHub/LSM6DSV320x-ESPIDF-Arduino-IDE/ESPIDF/LSM6DSV320x_ESPIDF_Firmware/build/bootloader-prefix"
-  "C:/Users/Admin/Documents/GitHub/LSM6DSV320x-ESPIDF-Arduino-IDE/ESPIDF/LSM6DSV320x_ESPIDF_Firmware/build/bootloader-prefix/tmp"
-  "C:/Users/Admin/Documents/GitHub/LSM6DSV320x-ESPIDF-Arduino-IDE/ESPIDF/LSM6DSV320x_ESPIDF_Firmware/build/bootloader-prefix/src/bootloader-stamp"
-  "C:/Users/Admin/Documents/GitHub/LSM6DSV320x-ESPIDF-Arduino-IDE/ESPIDF/LSM6DSV320x_ESPIDF_Firmware/build/bootloader-prefix/src"
-  "C:/Users/Admin/Documents/GitHub/LSM6DSV320x-ESPIDF-Arduino-IDE/ESPIDF/LSM6DSV320x_ESPIDF_Firmware/build/bootloader-prefix/src/bootloader-stamp"
+  "C:/Users/Admin/Documents/GitHub/LSM6DSV320x/ESPIDF/ESP_Firmware/build/bootloader"
+  "C:/Users/Admin/Documents/GitHub/LSM6DSV320x/ESPIDF/ESP_Firmware/build/bootloader-prefix"
+  "C:/Users/Admin/Documents/GitHub/LSM6DSV320x/ESPIDF/ESP_Firmware/build/bootloader-prefix/tmp"
+  "C:/Users/Admin/Documents/GitHub/LSM6DSV320x/ESPIDF/ESP_Firmware/build/bootloader-prefix/src/bootloader-stamp"
+  "C:/Users/Admin/Documents/GitHub/LSM6DSV320x/ESPIDF/ESP_Firmware/build/bootloader-prefix/src"
+  "C:/Users/Admin/Documents/GitHub/LSM6DSV320x/ESPIDF/ESP_Firmware/build/bootloader-prefix/src/bootloader-stamp"
 )
 
 set(configSubDirs )
 foreach(subDir IN LISTS configSubDirs)
-    file(MAKE_DIRECTORY "C:/Users/Admin/Documents/GitHub/LSM6DSV320x-ESPIDF-Arduino-IDE/ESPIDF/LSM6DSV320x_ESPIDF_Firmware/build/bootloader-prefix/src/bootloader-stamp/${subDir}")
+    file(MAKE_DIRECTORY "C:/Users/Admin/Documents/GitHub/LSM6DSV320x/ESPIDF/ESP_Firmware/build/bootloader-prefix/src/bootloader-stamp/${subDir}")
 endforeach()
 if(cfgdir)
-  file(MAKE_DIRECTORY "C:/Users/Admin/Documents/GitHub/LSM6DSV320x-ESPIDF-Arduino-IDE/ESPIDF/LSM6DSV320x_ESPIDF_Firmware/build/bootloader-prefix/src/bootloader-stamp${cfgdir}") # cfgdir has leading slash
+  file(MAKE_DIRECTORY "C:/Users/Admin/Documents/GitHub/LSM6DSV320x/ESPIDF/ESP_Firmware/build/bootloader-prefix/src/bootloader-stamp${cfgdir}") # cfgdir has leading slash
 endif()

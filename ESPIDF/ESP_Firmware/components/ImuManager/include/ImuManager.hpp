@@ -84,10 +84,10 @@ public:
     ~ImuManager() = default;
     void setup();
     void loop();
-    RawAccelVec getRawLowAccelerationIng() const { return lowAccel_; }
-    RawAccelVec getRawHighAccelerationIng() const { return highAccel_; }
-    RawGyroVec getRawGyroInMdps() const { return dpsGyro_; }
-    Temperature getTemperatureInDegreeC() const { return tempInC_; }
+    const RawAccelVec& getRawLowAccelerationIng() const { return lowAccel_; }
+    const RawAccelVec& getRawHighAccelerationIng() const { return highAccel_; }
+    const RawGyroVec& getRawGyroInMdps() const { return dpsGyro_; }
+    const Temperature& getTemperatureInDegreeC() const { return tempInC_; }
     QuaternionVec getQuaternions() const { return quat_; }
     EulerAngles getPitch() const { return pitch_; }
     EulerAngles getRoll() const { return roll_; }
