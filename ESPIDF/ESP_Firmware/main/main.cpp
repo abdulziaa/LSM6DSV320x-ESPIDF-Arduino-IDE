@@ -4,12 +4,22 @@
 #include "esp_log.h"
 #include "ImuManager.hpp"
 
+//=============================================================================
+// PIN CONFIGURATION - Change these values to match your hardware setup
+//=============================================================================
+#define IMU_CS_PIN      GPIO_NUM_5      // Chip Select pin
+#define IMU_SCK_PIN     GPIO_NUM_18     // SPI Clock pin
+#define IMU_MISO_PIN    GPIO_NUM_19     // SPI MISO (Master In Slave Out) pin
+#define IMU_MOSI_PIN    GPIO_NUM_23     // SPI MOSI (Master Out Slave In) pin
+#define IMU_SPI_MODE    0               // SPI Mode (0, 1, 2, or 3)
+
 #define POLL_INTERVAL_MS 1000 // Poll every 1 second
 static const char* TAG = "IMU_APP";
 
 extern "C" void app_main(void) 
 {
-    ImuManager imu;
+    // Initialize IMU with configured pins
+    ImuManager imu(IMU_CS_PIN, IMU_SCK_PIN, IMU_MISO_PIN, IMU_MOSI_PIN, IMU_SPI_MODE);
     imu.setup();
 
     printf("IMU initialized, starting data polling...");
